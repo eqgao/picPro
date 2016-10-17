@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     private void initView() {
         mTablayout = (TabLayout) findViewById(R.id.tablayout);
-        mViewpager = (ViewPager) findViewById(R.id.viePager);
+        mViewpager = (ViewPager) findViewById(R.id.viewPager);
 
         mViewpager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
