@@ -128,7 +128,11 @@ public class TwoFragment extends Fragment {
         @Override
         protected Integer doInBackground(Void... params) {
             while(mDRUtils.getRequsetStatus()==JsonDataRequestUtils.STATUS_RESQUSET_ING){
-
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             return 0;
         }
