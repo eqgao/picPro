@@ -7,4 +7,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="imagewall_size">100dp</dimen>
+    <dimen name="imagewall_spacing">1dp</dimen>
 </resources>

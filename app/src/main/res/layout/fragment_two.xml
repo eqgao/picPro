@@ -3,10 +3,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Two"
-        android:id="@+id/button"
-        android:layout_gravity="center_horizontal" />
+    <com.handmark.pulltorefresh.library.PullToRefreshGridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/gv_imgwall"
+        android:columnWidth="100dp"
+        android:numColumns="2"
+        android:stretchMode="columnWidth"
+        android:horizontalSpacing="@dimen/imagewall_spacing"
+        android:verticalSpacing="1dp"
+        android:gravity="center"
+        />
 </LinearLayout>
