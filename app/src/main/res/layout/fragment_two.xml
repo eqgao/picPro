@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.handmark.pulltorefresh.library.PullToRefreshGridView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/gv_imgwall"
-        android:columnWidth="100dp"
-        android:numColumns="2"
-        android:stretchMode="columnWidth"
-        android:horizontalSpacing="@dimen/imagewall_spacing"
-        android:verticalSpacing="1dp"
-        android:gravity="center"
-        />
+        android:layout_height="wrap_content"
+        android:id="@+id/srl_imgwall">
+        <GridView
+            android:id="@+id/gv_imgwall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnWidth="100dp"
+            android:gravity="center"
+            android:horizontalSpacing="1dp"
+            android:numColumns="2"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="1dp" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/colorRed"
+        android:text="正在加载"/>
+
 </LinearLayout>

@@ -13,7 +13,7 @@ import com.android.volley.toolbox.Volley;
  * Created by helloworld on 2016/10/17.
  */
 
-public class GetImageUtils implements AbsListView.OnScrollListener{
+public class GetImageUtils {
     private Context context;
     private RequestQueue mImagesRequsetQueue;
     private ImageLoader mLoader;
@@ -33,18 +33,8 @@ public class GetImageUtils implements AbsListView.OnScrollListener{
         return mLoader;
     }
 
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        if(scrollState==SCROLL_STATE_FLING){
-           mImagesRequsetQueue.stop();
-        }else if(scrollState==SCROLL_STATE_IDLE){
-            mImagesRequsetQueue.start();
-        }
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+    public RequestQueue getmImagesRequsetQueue() {
+        return mImagesRequsetQueue;
     }
 
     class BitmapCache implements ImageLoader.ImageCache {

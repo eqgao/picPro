@@ -29,6 +29,7 @@ public abstract class JsonDataRequestUtils {
     public static final int STATUS_RESQUSET_ING=1;
     public static final int STATUS_RESQUSET_ERROR=0;
     public static final int STATUS_RESQUSET_SUCCESS=2;
+    public static final int STATUS_RESQUSET_WAIT=3;
     public JsonDataRequestUtils(final Context context) {
         this.context = context;
         mQueue = Volley.newRequestQueue(context);
@@ -38,13 +39,16 @@ public abstract class JsonDataRequestUtils {
                 setRequsetStatus(STATUS_RESQUSET_SUCCESS);
                 ResponseJson = response;
                 AfterResponing();
+                setRequsetStatus(STATUS_RESQUSET_WAIT);
             }
         };
         mErrorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 setRequsetStatus(STATUS_RESQUSET_ERROR);
+                AfterResponing();
                 Toast.makeText(context, "Internet Error", Toast.LENGTH_SHORT).show();
+                setRequsetStatus(STATUS_RESQUSET_WAIT);
             }
         };
 
