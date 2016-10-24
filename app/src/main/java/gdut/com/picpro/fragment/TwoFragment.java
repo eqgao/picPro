@@ -1,5 +1,6 @@
 package gdut.com.picpro.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -23,10 +24,11 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
 
+import gdut.com.picpro.MyApplication;
 import gdut.com.picpro.R;
+import gdut.com.picpro.activities.ShowImgActivity;
 import gdut.com.picpro.beans.tngoubeans.TngouJsonResponse;
 import gdut.com.picpro.beans.tngoubeans.Tngous;
-import gdut.com.picpro.utils.GetImageUtils;
 import gdut.com.picpro.utils.JsonDataRequestUtils;
 
 /**
@@ -36,7 +38,7 @@ import gdut.com.picpro.utils.JsonDataRequestUtils;
 public class TwoFragment extends Fragment {
     private GridView mGridView;
     private ArrayList<String> mBitmapsUrl;
-    private GetImageUtils mGetImg;
+    private MyApplication mApplication;
     private ImageLoader mLoader;
     private String mRequestUrl = "http://www.tngou.net/tnfs/api/news?id=0&rows=10";
     private TngouJsonResponse mImgResponse;
@@ -71,7 +73,7 @@ public class TwoFragment extends Fragment {
         mTARight.setDuration(500);
         ScreanHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
         ScreanWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        mGetImg = new GetImageUtils(getActivity());
+        mApplication= (MyApplication) getActivity().getApplication();
         mBitmapsUrl = new ArrayList<String>();
         mDelImgUrl = new ArrayList<String>();
         mAnimateItem = new ArrayList<String>();
@@ -149,6 +151,11 @@ public class TwoFragment extends Fragment {
                     } else if (mDelImgUrl.contains(mBitmapsUrl.get(position))) {
                         mDelImgUrl.remove(mBitmapsUrl.get(position));
                     }
+                }else {
+                    Intent intent=new Intent(getActivity(), ShowImgActivity.class);
+                    intent.putExtra("url",mBitmapsUrl.get(position));
+                    startActivity(intent);
+
                 }
 
             }
@@ -190,10 +197,10 @@ public class TwoFragment extends Fragment {
                     mDelImgUrl.clear();
 
                 }
-                return false;
+                return true;
             }
         });
-        mLoader = mGetImg.getmLoader();
+        mLoader = mApplication.getImgLoader();
         mDRUtils = new JsonDataRequestUtils(getActivity()) {
             @Override
             public void AfterResponing() {
@@ -264,7 +271,6 @@ public class TwoFragment extends Fragment {
                 if (!mAnimateItem.contains(mBitmapsUrl.get(position))) {
                     mAnimateItem.add(mBitmapsUrl.get(position));
                     if (position % 2 == 0) {
-                        System.out.println(mBitmapsUrl.get(position));
                         convertView.startAnimation(mTARight);
                     } else {
                         convertView.startAnimation(mTALeft);
