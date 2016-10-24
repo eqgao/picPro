@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -17,13 +18,18 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import gdut.com.picpro.MyApplication;
 import gdut.com.picpro.R;
 
-public class ShowImgActivity extends AppCompatActivity {
+public class ShowImgActivity extends AppCompatActivity implements View.OnTouchListener{
     private NetworkImageView mImageView;
     private LinearLayout mMainView;
+    private Timer mTimer;
+    private TimerTask mTimerTask;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +39,11 @@ public class ShowImgActivity extends AppCompatActivity {
         mMainView = (LinearLayout) findViewById(R.id.activity_show_img);
         mImageView = (NetworkImageView) findViewById(R.id.iv_show_img);
         mImageView.setImageUrl(getIntent().getStringExtra("url"), myApplication.getImgLoader());
-
-        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
+        mImageView.setOnTouchListener(this);
+        mTimer=new Timer();
+        mTimerTask= new TimerTask() {
             @Override
-            public boolean onLongClick(View v) {
+            public void run() {
                 AlertDialog.Builder bulider = new AlertDialog.Builder(ShowImgActivity.this).setItems(new String[]{"保存图片"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -46,49 +53,14 @@ public class ShowImgActivity extends AppCompatActivity {
                             Toast.makeText(ShowImgActivity.this, "无法获取图片缓存", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        new ImageDownloadTask().execute(image);
+                        //new ImageDownloadTask().execute(image);
                     }
                 });
                 bulider.show();
-                return true;
             }
+        };
 
-        });
 
-    }
-
-    class ImageDownloadTask extends AsyncTask<Bitmap, Void, String> {
-        @Override
-        protected String doInBackground(Bitmap... params) {
-            try {
-                String sdcard = Environment.getExternalStorageDirectory().toString();
-                File file = new File(getApplicationContext().getFilesDir().getAbsolutePath() + "/Download/Image");
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-                File imageFile = new File(file.getAbsolutePath(), new Date().getTime() + ".jpg");
-                FileOutputStream outStream = null;
-                outStream = new FileOutputStream(imageFile);
-                Bitmap image = params[0];
-                image.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-                outStream.flush();
-                outStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "error";
-            }
-            return "success";
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (s.equals("error")) {
-                Toast.makeText(ShowImgActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(ShowImgActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     ///滑动事件控制
@@ -105,8 +77,7 @@ public class ShowImgActivity extends AppCompatActivity {
     int newX = 0, newY = 0;
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
+    public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (event.getPointerCount() == 1) {
@@ -162,8 +133,45 @@ public class ShowImgActivity extends AppCompatActivity {
                 break;
 
         }
-        return super.onTouchEvent(event);
+        return true;
     }
+
+    class ImageDownloadTask extends AsyncTask<Bitmap, Void, String> {
+        @Override
+        protected String doInBackground(Bitmap... params) {
+            try {
+                String sdcard = Environment.getExternalStorageDirectory().toString();
+                File file = new File(getApplicationContext().getFilesDir().getAbsolutePath() + "/Download/Image");
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                File imageFile = new File(file.getAbsolutePath(), new Date().getTime() + ".jpg");
+                FileOutputStream outStream = null;
+                outStream = new FileOutputStream(imageFile);
+                Bitmap image = params[0];
+                image.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                outStream.flush();
+                outStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "error";
+            }
+            return "success";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s.equals("error")) {
+                Toast.makeText(ShowImgActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ShowImgActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+
 
     @Override
     protected void onStop() {
