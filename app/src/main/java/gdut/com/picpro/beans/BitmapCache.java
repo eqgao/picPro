@@ -1,4 +1,4 @@
-package gdut.com.picpro.beans.tngoubeans;
+package gdut.com.picpro.beans;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
