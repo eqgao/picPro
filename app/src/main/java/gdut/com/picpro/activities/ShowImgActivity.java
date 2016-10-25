@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -18,17 +17,14 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import gdut.com.picpro.MyApplication;
 import gdut.com.picpro.R;
 
-public class ShowImgActivity extends AppCompatActivity implements View.OnTouchListener{
+public class ShowImgActivity extends AppCompatActivity implements View.OnTouchListener {
     private NetworkImageView mImageView;
     private LinearLayout mMainView;
-    private Timer mTimer;
-    private TimerTask mTimerTask;
+    private int mTouchMode = 1;//1:单指拖动状态 2：双指放大缩小3：单指长按
 
 
     @Override
@@ -40,28 +36,30 @@ public class ShowImgActivity extends AppCompatActivity implements View.OnTouchLi
         mImageView = (NetworkImageView) findViewById(R.id.iv_show_img);
         mImageView.setImageUrl(getIntent().getStringExtra("url"), myApplication.getImgLoader());
         mImageView.setOnTouchListener(this);
-        mTimer=new Timer();
-        mTimerTask= new TimerTask() {
+        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void run() {
-                AlertDialog.Builder bulider = new AlertDialog.Builder(ShowImgActivity.this).setItems(new String[]{"保存图片"}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mImageView.setDrawingCacheEnabled(true);
-                        Bitmap image = mImageView.getDrawingCache();
-                        if (image == null) {
-                            Toast.makeText(ShowImgActivity.this, "无法获取图片缓存", Toast.LENGTH_SHORT).show();
-                            return;
+            public boolean onLongClick(View v) {
+                if (mTouchMode == 3) {
+                    AlertDialog.Builder bulider = new AlertDialog.Builder(ShowImgActivity.this).setItems(new String[]{"保存图片"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mImageView.setDrawingCacheEnabled(true);
+                            Bitmap image = mImageView.getDrawingCache();
+                            if (image == null) {
+                                Toast.makeText(ShowImgActivity.this, "无法获取图片缓存", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            //new ImageDownloadTask().execute(image);
                         }
-                        //new ImageDownloadTask().execute(image);
-                    }
-                });
-                bulider.show();
+                    });
+                    bulider.show();
+                }
+
+                return true;
             }
-        };
-
-
+        });
     }
+
 
     ///滑动事件控制
     float CurrDistance;
@@ -78,21 +76,23 @@ public class ShowImgActivity extends AppCompatActivity implements View.OnTouchLi
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        System.out.println(mTouchMode);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (event.getPointerCount() == 1) {
+                if (event.getPointerCount() == 1 && mTouchMode != 2) {
                     oldX = (int) event.getRawX();
                     oldY = (int) event.getRawY();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (event.getPointerCount() > 1) {
+                    mTouchMode = 2;
                     float offsetX = event.getX(0) - event.getX(1);
                     float offsetY = event.getY(0) - event.getY(1);
                     CurrDistance = (float) Math.sqrt(offsetX * offsetX + offsetY * offsetY);
                     if (LastDistance < 0) {
                         LastDistance = CurrDistance;
-                    } else if (CurrDistance - LastDistance > 5) {
+                    } else if (CurrDistance - LastDistance > 10) {
                         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mImageView.getLayoutParams();
                         if (lp == null) {
                             lp = new LinearLayout.LayoutParams(mImageView.getWidth() + 1, mImageView.getHeight() + 1);
@@ -102,7 +102,7 @@ public class ShowImgActivity extends AppCompatActivity implements View.OnTouchLi
                         }
                         mImageView.setLayoutParams(lp);
                         LastDistance = CurrDistance;
-                    } else if (LastDistance - CurrDistance > 5) {
+                    } else if (LastDistance - CurrDistance > 10) {
                         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mImageView.getLayoutParams();
                         if (lp == null) {
                             lp = new LinearLayout.LayoutParams(mImageView.getWidth() - 1, mImageView.getHeight() - 1);
@@ -113,12 +113,12 @@ public class ShowImgActivity extends AppCompatActivity implements View.OnTouchLi
                         mImageView.setLayoutParams(lp);
                         LastDistance = CurrDistance;
                     }
-                } else if (event.getPointerCount() == 1) {
+                } else if (event.getPointerCount() == 1 && mTouchMode != 2) {
                     newX = (int) event.getRawX();
                     newY = (int) event.getRawY();
                     dx = newX - oldX;
                     dy = newY - oldY;
-                    if (Math.abs(dx) > 50 || Math.abs(dy) > 50) {
+                    if (Math.abs(dx) > 40 || Math.abs(dy) > 40) {
                         left = (int) (mImageView.getLeft() + dx);
                         top = (int) (mImageView.getTop() + dy);
                         bottom = top + mImageView.getHeight();
@@ -126,14 +126,18 @@ public class ShowImgActivity extends AppCompatActivity implements View.OnTouchLi
                         mImageView.layout(left, top, right, bottom);
                         oldX = newX;
                         oldY = newY;
+                        mTouchMode = 1;
+                    } else if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+                        mTouchMode = 3;
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                mTouchMode = 1;
                 break;
 
         }
-        return true;
+        return false;
     }
 
     class ImageDownloadTask extends AsyncTask<Bitmap, Void, String> {
@@ -169,8 +173,6 @@ public class ShowImgActivity extends AppCompatActivity implements View.OnTouchLi
             }
         }
     }
-
-
 
 
     @Override
