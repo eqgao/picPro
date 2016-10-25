@@ -73,7 +73,7 @@ public class TwoFragment extends Fragment {
         mTARight.setDuration(500);
         ScreanHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
         ScreanWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        mApplication= (MyApplication) getActivity().getApplication();
+        mApplication = (MyApplication) getActivity().getApplication();
         mBitmapsUrl = new ArrayList<String>();
         mDelImgUrl = new ArrayList<String>();
         mAnimateItem = new ArrayList<String>();
@@ -123,7 +123,7 @@ public class TwoFragment extends Fragment {
                 if (scrollState == SCROLL_STATE_IDLE && mLastItemIndex == MyAdapter.getCount() - 1) {
                     int size = mImgResponse.getTngou().size();
                     String LastId = mImgResponse.getTngou().get(size - 1).getId();
-                    if(mDRUtils.getRequsetStatus()!=JsonDataRequestUtils.STATUS_RESQUSET_WAIT)
+                    if (mDRUtils.getRequsetStatus() != JsonDataRequestUtils.STATUS_RESQUSET_WAIT)
                         return;
                     if (mImgResponse.getTotal().equals("0")) {
                         Toast.makeText(getActivity(), "已经没有新图了，喵！", Toast.LENGTH_SHORT).show();
@@ -151,9 +151,9 @@ public class TwoFragment extends Fragment {
                     } else if (mDelImgUrl.contains(mBitmapsUrl.get(position))) {
                         mDelImgUrl.remove(mBitmapsUrl.get(position));
                     }
-                }else {
-                    Intent intent=new Intent(getActivity(), ShowImgActivity.class);
-                    intent.putExtra("url",mBitmapsUrl.get(position));
+                } else {
+                    Intent intent = new Intent(getActivity(), ShowImgActivity.class);
+                    intent.putExtra("url", mBitmapsUrl.get(position));
                     startActivity(intent);
 
                 }
@@ -249,13 +249,13 @@ public class TwoFragment extends Fragment {
                 holder.networkImageView = (NetworkImageView) convertView.findViewById(R.id.iv_imagewall_unit);
                 holder.networkImageView.setDefaultImageResId(R.drawable.img_imgwall_default);
                 holder.networkImageView.setErrorImageResId(R.drawable.img_imgwall_error);
-                AbsListView.LayoutParams lp= (AbsListView.LayoutParams) convertView.getLayoutParams();
-                if(lp==null){
-                    lp=new  AbsListView.LayoutParams(ScreanWidth / 2 - 1, ScreanHeight / 3 - 1);
+                AbsListView.LayoutParams lp = (AbsListView.LayoutParams) convertView.getLayoutParams();
+                if (lp == null) {
+                    lp = new AbsListView.LayoutParams(ScreanWidth / 2 - 1, ScreanHeight / 3 - 1);
                     convertView.setLayoutParams(lp);
-                }else {
-                    lp.height=ScreanHeight/3-1;
-                    lp.width=ScreanWidth/2-1;
+                } else {
+                    lp.height = ScreanHeight / 3 - 1;
+                    lp.width = ScreanWidth / 2 - 1;
                 }
                 convertView.setTag(holder);
             } else {

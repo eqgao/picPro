@@ -45,9 +45,9 @@ public class AutoScrollViewPager extends FrameLayout implements ViewPager.OnPage
 
     private RadioStyle radioStyle;
 
-    private static int RADIO_POSISTION_LEFT = 0;
-    private static int RADIO_POSISTION_CENTER = 1;
-    private static int RADIO_POSISTION_RIGHT = 2;
+    private static final int RADIO_POSISTION_LEFT = 0;
+    private static final int RADIO_POSISTION_CENTER = 1;
+    private static final int RADIO_POSISTION_RIGHT = 2;
 
     class RadioStyle {
         float marginBottom;

@@ -13,5 +13,5 @@
         avp:radio_margin_right="30dp"
         avp:radio_position="right"
         avp:radio_size="30dp"
-        avp:radio_space="15dp"></gdut.com.picpro.customs.AutoScrollViewPager>
+        avp:radio_space="15dp" />
 </LinearLayout>

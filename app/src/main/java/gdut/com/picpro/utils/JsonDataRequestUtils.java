@@ -24,11 +24,12 @@ public abstract class JsonDataRequestUtils {
     private Response.Listener<JSONObject> mlistener;
     private Response.ErrorListener mErrorListener;
     private JSONObject ResponseJson;
-    private int RequsetStatus=3;
-    public static final int STATUS_RESQUSET_ING=1;
-    public static final int STATUS_RESQUSET_ERROR=0;
-    public static final int STATUS_RESQUSET_SUCCESS=2;
-    public static final int STATUS_RESQUSET_WAIT=3;
+    private int RequsetStatus = 3;
+    public static final int STATUS_RESQUSET_ING = 1;
+    public static final int STATUS_RESQUSET_ERROR = 0;
+    public static final int STATUS_RESQUSET_SUCCESS = 2;
+    public static final int STATUS_RESQUSET_WAIT = 3;
+
     public JsonDataRequestUtils(final Context context) {
         this.context = context;
         mQueue = Volley.newRequestQueue(context);
@@ -80,7 +81,7 @@ public abstract class JsonDataRequestUtils {
     }
 
     public void JsonRequset() {
-        RequsetStatus=STATUS_RESQUSET_ING;
+        RequsetStatus = STATUS_RESQUSET_ING;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, mlistener, mErrorListener);
         mQueue.add(request);
     }
@@ -89,11 +90,12 @@ public abstract class JsonDataRequestUtils {
         T t = null;
         if (ResponseJson != null) {
             Gson gson = new Gson();
-            t = gson.fromJson(ResponseJson.toString(),cls);
+            t = gson.fromJson(ResponseJson.toString(), cls);
         }
         return t;
     }
-    public <T> T GsonToBean(JSONObject responseJson,Class<T> cls) {
+
+    public <T> T GsonToBean(JSONObject responseJson, Class<T> cls) {
         T t = null;
         if (responseJson != null) {
             Gson gson = new Gson();

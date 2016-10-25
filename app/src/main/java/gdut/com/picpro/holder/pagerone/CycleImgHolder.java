@@ -45,6 +45,7 @@ public class CycleImgHolder {
                 }
             };
             viewPager.setAdapter(adapter);
+        } else if (viewPager != null && adapter != null) {
             adapter.notifyData(al);
         }
     }
