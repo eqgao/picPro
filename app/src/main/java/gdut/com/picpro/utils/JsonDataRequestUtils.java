@@ -10,7 +10,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
@@ -39,16 +38,13 @@ public abstract class JsonDataRequestUtils {
                 setRequsetStatus(STATUS_RESQUSET_SUCCESS);
                 ResponseJson = response;
                 AfterResponing();
-                setRequsetStatus(STATUS_RESQUSET_WAIT);
             }
         };
         mErrorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 setRequsetStatus(STATUS_RESQUSET_ERROR);
-                AfterResponing();
                 Toast.makeText(context, "Internet Error", Toast.LENGTH_SHORT).show();
-                setRequsetStatus(STATUS_RESQUSET_WAIT);
             }
         };
 

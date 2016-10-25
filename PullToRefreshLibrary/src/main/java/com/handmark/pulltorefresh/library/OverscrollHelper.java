@@ -10,27 +10,27 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *******************************************************************************/
-package com.handmark.pulltorefresh.library;
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *******************************************************************************/
+	package com.handmark.pulltorefresh.library;
 
-import android.annotation.TargetApi;
-import android.util.Log;
-import android.view.View;
+	import android.annotation.TargetApi;
+	import android.util.Log;
+	import android.view.View;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
+	import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+	import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
 
-@TargetApi(9)
-public final class OverscrollHelper {
+	@TargetApi(9)
+	public final class OverscrollHelper {
 
-	static final String LOG_TAG = "OverscrollHelper";
-	static final float DEFAULT_OVERSCROLL_SCALE = 1f;
+		static final String LOG_TAG = "OverscrollHelper";
+		static final float DEFAULT_OVERSCROLL_SCALE = 1f;
 
-	/**
-	 * Helper method for Overscrolling that encapsulates all of the necessary
-	 * function.
+		/**
+		 * Helper method for Overscrolling that encapsulates all of the necessary
+		 * function.
 	 * <p/>
 	 * This should only be used on AdapterView's such as ListView as it just
 	 * calls through to overScrollBy() with the scrollRange = 0. AdapterView's

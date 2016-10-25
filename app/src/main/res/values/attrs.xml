@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="radio_style">
+        <attr name="radio_margin_left" format="dimension" />
+        <attr name="radio_margin_right" format="dimension" />
+        <attr name="radio_margin_bottom" format="dimension" />
+        <attr name="radio_margin_top" format="dimension" />
+
+        <attr name="radio_size" format="dimension" />
+        <attr name="radio_space" format="dimension" />
+
+        <attr name="radio_position">
+            <enum name="left" value="0" />
+            <enum name="center" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+
+    </declare-styleable>
+</resources>
