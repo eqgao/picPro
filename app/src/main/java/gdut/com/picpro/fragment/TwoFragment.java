@@ -16,7 +16,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -29,6 +29,10 @@ import gdut.com.picpro.R;
 import gdut.com.picpro.activities.ShowImgActivity;
 import gdut.com.picpro.beans.tngoubeans.TngouJsonResponse;
 import gdut.com.picpro.beans.tngoubeans.Tngous;
+import gdut.com.picpro.customs.ImgWallGridView;
+import gdut.com.picpro.customs.ImgWallScrollView;
+import gdut.com.picpro.customs.MainViewPager;
+import gdut.com.picpro.interfaces.ImgWallScrollViewListener;
 import gdut.com.picpro.utils.JsonDataRequestUtils;
 
 /**
@@ -36,7 +40,7 @@ import gdut.com.picpro.utils.JsonDataRequestUtils;
  */
 
 public class TwoFragment extends Fragment {
-    private GridView mGridView;
+    private ImgWallGridView mGridView;
     private ArrayList<String> mBitmapsUrl;
     private MyApplication mApplication;
     private ImageLoader mLoader;
@@ -46,6 +50,8 @@ public class TwoFragment extends Fragment {
     private ImageWallAdapter MyAdapter;
     private Snackbar mDelImgSnackBar;
     private SwipeRefreshLayout mRefrshLayout;
+    private ImgWallScrollView mScrollingView;
+    private TextView mTextView;
     private ArrayList<String> mDelImgUrl;//要删除的图片地址
     private int ScreanWidth;
     private int ScreanHeight;
@@ -55,11 +61,14 @@ public class TwoFragment extends Fragment {
     private ArrayList<String> mAnimateItem;//记录已播放动画的图片地址
     private int mLastItemIndex;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_two, container, false);
+        final View view = inflater.inflate(R.layout.fragment_two, container, false);
         mRefrshLayout = (SwipeRefreshLayout) view.findViewById(R.id.srl_imgwall);
+        mScrollingView = (ImgWallScrollView) view.findViewById(R.id.sv_imgwall);
+        mTextView = (TextView) view.findViewById(R.id.tv_loadiing);
         MyAdapter = new ImageWallAdapter();
         mTALeft = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 1.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
@@ -77,29 +86,8 @@ public class TwoFragment extends Fragment {
         mBitmapsUrl = new ArrayList<String>();
         mDelImgUrl = new ArrayList<String>();
         mAnimateItem = new ArrayList<String>();
-        mGridView = (GridView) view.findViewById(R.id.gv_imgwall);
-//        mGridView.setMode(PullToRefreshBase.Mode.BOTH);
-//        mGridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<GridView>() {
-//            @Override
-//            public void onPullDownToRefresh(PullToRefreshBase<GridView> refreshView) {
-//                mRequestUrl = "http://www.tngou.net/tnfs/api/news?id=0&rows=10";
-//                mBitmapsUrl.clear();
-//                mDelImgUrl.clear();
-//                mAnimateItem.clear();
-//                mDRUtils.setUrl(mRequestUrl);
-//                mDRUtils.JsonRequset();
-//                new GetDataTask().execute();
-//            }
-//
-//            @Override
-//            public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
-//                int size = mImgResponse.getTngou().size();
-//                mRequestUrl = "http://www.tngou.net/tnfs/api/news?id=" + mImgResponse.getTngou().get(size - 1).getId() + "&rows=10";
-//                mDRUtils.setUrl(mRequestUrl);
-//                mDRUtils.JsonRequset();
-//                new GetDataTask().execute();
-//            }
-//        });
+        mGridView = (ImgWallGridView) view.findViewById(R.id.gv_imgwall);
+
         mRefrshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -111,33 +99,49 @@ public class TwoFragment extends Fragment {
                 mDRUtils.JsonRequset();
             }
         });
-        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+        mScrollingView.setOnImgWallScrollViewChangedListener(new ImgWallScrollViewListener() {
+            View childView = mScrollingView.getChildAt(0);
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //滑动时不加载 静止时加载
-//                if (scrollState == SCROLL_STATE_FLING) {
-//                    mGetImg.getmImagesRequsetQueue().stop();
-//                } else if (scrollState == SCROLL_STATE_IDLE) {
-//                    mGetImg.getmImagesRequsetQueue().start();
-//                }
-                if (scrollState == SCROLL_STATE_IDLE && mLastItemIndex == MyAdapter.getCount() - 1) {
-                    int size = mImgResponse.getTngou().size();
-                    String LastId = mImgResponse.getTngou().get(size - 1).getId();
-                    if (mDRUtils.getRequsetStatus() != JsonDataRequestUtils.STATUS_RESQUSET_WAIT)
-                        return;
-                    if (mImgResponse.getTotal().equals("0")) {
-                        Toast.makeText(getActivity(), "已经没有新图了，喵！", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    mRequestUrl = "http://www.tngou.net/tnfs/api/news?id=" + LastId + "&rows=10";
-                    mDRUtils.setUrl(mRequestUrl);
-                    mDRUtils.JsonRequset();
+            public void ImgWallScrollViewChanged(ImgWallScrollView scrollView, int x, int y, int oldx, int oldy) {
+                if (childView.getMeasuredHeight() == y + scrollView.getHeight()) {
+                    RequestNext();
                 }
             }
-
+        });
+//        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(AbsListView view, int scrollState) {
+//                //滑动时不加载 静止时加载
+////                if (scrollState == SCROLL_STATE_FLING) {
+////                    mGetImg.getmImagesRequsetQueue().stop();
+////                } else if (scrollState == SCROLL_STATE_IDLE) {
+////                    mGetImg.getmImagesRequsetQueue().start();
+////                }
+//                if (scrollState == SCROLL_STATE_IDLE && mLastItemIndex == MyAdapter.getCount() - 1) {
+//                    int size = mImgResponse.getTngou().size();
+//                    String LastId = mImgResponse.getTngou().get(size - 1).getId();
+//                    if (mDRUtils.getRequsetStatus() != JsonDataRequestUtils.STATUS_RESQUSET_WAIT)
+//                        return;
+//                    if (mImgResponse.getTotal().equals("0")) {
+//                        Toast.makeText(getActivity(), "已经没有新图了，喵！", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                    mRequestUrl = "http://www.tngou.net/tnfs/api/news?id=" + LastId + "&rows=10";
+//                    mDRUtils.setUrl(mRequestUrl);
+//                    mDRUtils.JsonRequset();
+//                }
+//            }
+//
+//            @Override
+//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//                mLastItemIndex = firstVisibleItem + visibleItemCount - 1;
+//            }
+//        });
+        mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                mLastItemIndex = firstVisibleItem + visibleItemCount - 1;
+            public void onClick(View v) {
+                RequestNext();
             }
         });
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -160,11 +164,13 @@ public class TwoFragment extends Fragment {
 
             }
         });
+        final MainViewPager mainViewPager = (MainViewPager) getActivity().findViewById(R.id.viewPager);
         mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if (LayoutStatus == 0) {
                     LayoutStatus = 1;
+                    mainViewPager.setScrollStatue(false);
                     MyAdapter.notifyDataSetChanged();
                     CoordinatorLayout cl = (CoordinatorLayout) getActivity().findViewById(R.id.cl_container);
                     mDelImgSnackBar = Snackbar.make(cl, "请选中需要删除的图片", Snackbar.LENGTH_INDEFINITE).setAction("删除", new View.OnClickListener() {
@@ -183,13 +189,30 @@ public class TwoFragment extends Fragment {
                                     }
                                 }
                             }
+                            setFooterText();
                             MyAdapter.notifyDataSetChanged();
                             mDelImgUrl.clear();
+                        }
+                    });
+
+                    mDelImgSnackBar.getView().setBackgroundColor(getResources().getColor(R.color.colorAzure));
+                    //设置snackbar dismiss后的回调
+                    mDelImgSnackBar.setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            if (LayoutStatus == 1) {
+                                LayoutStatus = 0;
+                                mainViewPager.setScrollStatue(true);
+                                MyAdapter.notifyDataSetChanged();
+                                mDelImgUrl.clear();
+                            }
+                            super.onDismissed(snackbar, event);
                         }
                     });
                     mDelImgSnackBar.show();
                 } else {
                     LayoutStatus = 0;
+                    mainViewPager.setScrollStatue(true);
                     if (mDelImgSnackBar != null) {
                         mDelImgSnackBar.dismiss();
                     }
@@ -200,6 +223,7 @@ public class TwoFragment extends Fragment {
                 return true;
             }
         });
+
         mLoader = mApplication.getImgLoader();
         mDRUtils = new JsonDataRequestUtils(getActivity()) {
             @Override
@@ -207,11 +231,17 @@ public class TwoFragment extends Fragment {
                 mRefrshLayout.setRefreshing(false);
                 if (mDRUtils.getRequsetStatus() == STATUS_RESQUSET_SUCCESS) {
                     mImgResponse = this.GsonToBean(TngouJsonResponse.class);
+                    if (mImgResponse.getTotal().equals("0")) {
+                        Toast.makeText(getActivity(), "已经没有新图了，喵！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     for (Tngous t : mImgResponse.getTngou()) {
                         mBitmapsUrl.add("http://tnfs.tngou.net/img" + t.getImg());
                     }
+
                     MyAdapter.notifyDataSetChanged();
                 }
+                setFooterText();
             }
         };
         mDRUtils.setUrl(mRequestUrl);
@@ -220,6 +250,33 @@ public class TwoFragment extends Fragment {
         return view;
     }
 
+    private void RequestNext() {
+        int size;
+        String LastId;
+        if (mImgResponse != null) {
+            size = mImgResponse.getTngou().size();
+            LastId = mImgResponse.getTngou().get(size - 1).getId();
+        } else {
+            LastId = "0";
+        }
+        if (mDRUtils.getRequsetStatus() != JsonDataRequestUtils.STATUS_RESQUSET_WAIT)
+            return;
+        mRequestUrl = "http://www.tngou.net/tnfs/api/news?id=" + LastId + "&rows=10";
+        mDRUtils.setUrl(mRequestUrl);
+        mDRUtils.JsonRequset();
+    }
+
+    private void setFooterText() {
+        if (mDRUtils.getRequsetStatus() == JsonDataRequestUtils.STATUS_RESQUSET_ERROR) {
+            mTextView.setText("网络错误了，喵");
+            return;
+        }
+        if (mBitmapsUrl.size() <= 4) {
+            mTextView.setText("轻按继续加载，喵");
+        } else {
+            mTextView.setText("正在加载了，喵");
+        }
+    }
 
     class ImageWallAdapter extends BaseAdapter {
 
@@ -242,6 +299,7 @@ public class TwoFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
+
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = View.inflate(getActivity(), R.layout.fragment_two_item, null);
@@ -288,24 +346,5 @@ public class TwoFragment extends Fragment {
         public CheckBox checkBox;
     }
 
-//    private class GetDataTask extends AsyncTask<Void, Void, Integer> {
-//
-//        @Override
-//        protected Integer doInBackground(Void... params) {
-//            while (mDRUtils.getRequsetStatus() == JsonDataRequestUtils.STATUS_RESQUSET_ING) {
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            return 0;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Integer integer) {
-//            mGridView.onRefreshComplete();
-//            super.onPostExecute(integer);
-//        }
-//    }
+
 }

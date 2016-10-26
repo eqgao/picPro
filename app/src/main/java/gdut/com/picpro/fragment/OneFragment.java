@@ -92,7 +92,6 @@ public class OneFragment extends Fragment {
         imgs4.setName("111");
         imgs4.setImgResrouce(R.drawable.img1);
         a.add(imgs4);
-
         listView.setAdapter(new PagerOneAdapter(getContext(), a));
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override

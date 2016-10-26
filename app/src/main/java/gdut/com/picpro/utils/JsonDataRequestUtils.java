@@ -39,6 +39,7 @@ public abstract class JsonDataRequestUtils {
                 setRequsetStatus(STATUS_RESQUSET_SUCCESS);
                 ResponseJson = response;
                 AfterResponing();
+                setRequsetStatus(STATUS_RESQUSET_WAIT);
             }
         };
         mErrorListener = new Response.ErrorListener() {
@@ -46,6 +47,8 @@ public abstract class JsonDataRequestUtils {
             public void onErrorResponse(VolleyError error) {
                 setRequsetStatus(STATUS_RESQUSET_ERROR);
                 Toast.makeText(context, "Internet Error", Toast.LENGTH_SHORT).show();
+                AfterResponing();
+                setRequsetStatus(STATUS_RESQUSET_WAIT);
             }
         };
 

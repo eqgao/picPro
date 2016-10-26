@@ -15,14 +15,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import gdut.com.picpro.customs.MainViewPager;
 import gdut.com.picpro.fragment.OneFragment;
 import gdut.com.picpro.fragment.ThreeFragment;
 import gdut.com.picpro.fragment.TwoFragment;
 
 public class MainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener {
     private TabLayout mTablayout;
-    private ViewPager mViewpager;
+    private MainViewPager mViewpager;
     private String[] mTitles = {"图片1", "图片2", "音乐1"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +104,7 @@ public class MainActivity extends AppCompatActivity implements OnNavigationItemS
 
     private void initView() {
         mTablayout = (TabLayout) findViewById(R.id.tablayout);
-        mViewpager = (ViewPager) findViewById(R.id.viewPager);
-
+        mViewpager = (MainViewPager) findViewById(R.id.viewPager);
         mViewpager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public int getCount() {

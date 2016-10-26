@@ -12,6 +12,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import gdut.com.picpro.beans.BitmapCache;
+import gdut.com.picpro.customs.MainViewPager;
 
 /**
  * Created by hasee on 2016/10/15.
@@ -21,6 +22,7 @@ public class MyApplication extends Application {
 
     private com.android.volley.toolbox.ImageLoader mLoader;
     private RequestQueue mImagesRequsetQueue;
+
 
     public com.android.volley.toolbox.ImageLoader getImgLoader() {
         if(mLoader==null){
@@ -36,6 +38,7 @@ public class MyApplication extends Application {
         }
         return mImagesRequsetQueue;
     }
+
     /**
      * 是否开启日志输出,在Debug状态下开启
      * 在Release状态下关闭以提示程序性能
